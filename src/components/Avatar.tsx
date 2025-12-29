@@ -23,7 +23,7 @@ const corresponding = {
 function Avatar() {
   const groupRef = useRef<Group>(null);
 
-  const { nodes, materials } = useGLTF("/glb/Saia_MT.glb");
+  const { nodes, materials } = useGLTF("/glb/placeholder.glb");
 
   const body = nodes.body as SkinnedMesh | undefined;
 
@@ -236,7 +236,7 @@ function Avatar() {
   });
 
   return (
-    <group dispose={null} ref={groupRef} rotation={[-Math.PI / 2, 0, 0]}>
+    <group dispose={null} ref={groupRef} rotation={[-Math.PI / 2.5, 0, 0]}>
       <primitive object={nodes.Armature} />
       {body?.skeleton && (
         <skinnedMesh
@@ -251,4 +251,4 @@ function Avatar() {
 
 export default Avatar;
 
-useGLTF.preload("/glb/Saia_MT.glb");
+useGLTF.preload("/glb/placeholder.glb");

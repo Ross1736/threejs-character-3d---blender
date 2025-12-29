@@ -13,6 +13,8 @@ function App() {
       <Canvas shadows camera={{ position: [0, 10, 0], fov: 30 }}>
         <color attach="background" args={["skyblue"]} />
 
+        <ambientLight intensity={0.5} />
+
         <axesHelper args={[0.5]} />
         <gridHelper args={[10, 10]} />
 
