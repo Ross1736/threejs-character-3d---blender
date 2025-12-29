@@ -1,8 +1,9 @@
 import { Canvas } from "@react-three/fiber";
-import { Loader } from "@react-three/drei";
+import { Preload } from "@react-three/drei";
 import { Suspense } from "react";
 import ContentAvatar from "./components/ContentAvatar";
 import Buttons from "./components/Buttons";
+import SceneLoader from "./components/SceneLoader";
 
 function App() {
   return (
@@ -15,11 +16,11 @@ function App() {
         <axesHelper args={[0.5]} />
         <gridHelper args={[10, 10]} />
 
-        <Suspense fallback={null}>
+        <Suspense fallback={<SceneLoader />}>
           <ContentAvatar />
+          <Preload all />
         </Suspense>
       </Canvas>
-      <Loader />
     </>
   );
 }
