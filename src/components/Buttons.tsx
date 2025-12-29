@@ -1,15 +1,28 @@
 import style from "./styles/Buttons.module.css";
 import { useControllerStore } from "../store/controller.store";
 
+const listAnimations = [
+  "idle",
+  "armStretching",
+  "defeated",
+  "happyIdle",
+  "oldManIdle",
+  "pointingForward",
+  "surprised",
+  "tellingSecret",
+  "thankful",
+];
+
 function Buttons() {
   const { setActiveAnimation } = useControllerStore();
 
   return (
     <div className={style.buttons}>
-      <button onClick={() => setActiveAnimation("idle")}>Idle</button>
-      <button onClick={() => setActiveAnimation("dismissing")}>
-        Dismissing
-      </button>
+      {listAnimations.map((e, i) => (
+        <button key={i} onClick={() => setActiveAnimation(e)}>
+          {e}
+        </button>
+      ))}
     </div>
   );
 }

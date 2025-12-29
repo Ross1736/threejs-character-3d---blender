@@ -7,7 +7,7 @@ function App() {
     <>
       <Buttons />
 
-      <Canvas shadows camera={{ position: [0, 10, 0], fov: 50 }}>
+      <Canvas shadows camera={{ position: [0, 10, 0], fov: 30 }}>
         <color attach="background" args={["lightpink"]} />
 
         <axesHelper args={[0.5]} />
