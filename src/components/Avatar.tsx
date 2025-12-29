@@ -1,10 +1,8 @@
 import { useAnimations, useFBX, useGLTF } from "@react-three/drei";
-import { useRef, useMemo, useEffect } from "react";
+import { useRef, useMemo, useEffect, useState } from "react";
 import { type Group, type AnimationClip, type SkinnedMesh } from "three";
 import { useControllerStore } from "../store/controller.store";
-import { useControls } from "leva";
-import * as THREE from "three";
-import { useFrame, useLoader } from "@react-three/fiber";
+import { useFrame } from "@react-three/fiber";
 import { weightEnvelope } from "../utils/lipsync";
 
 type RhubarbSymbol = keyof typeof corresponding;
@@ -25,7 +23,7 @@ const corresponding = {
 function Avatar() {
   const groupRef = useRef<Group>(null);
 
-  const { nodes, materials } = useGLTF("/glb/placeholder.glb");
+  const { nodes, materials } = useGLTF("/glb/Saia_MT.glb");
 
   const body = nodes.body as SkinnedMesh | undefined;
 
@@ -44,6 +42,7 @@ function Avatar() {
     "/fbx/Telling A Secret.fbx"
   );
   const { animations: thankfulAnimations } = useFBX("/fbx/Thankful.fbx");
+  const { animations: twistDanceAnimations } = useFBX("/fbx/Twist Dance.fbx");
 
   const listAnimations = useMemo<AnimationClip[]>(() => {
     const list: AnimationClip[] = [];
@@ -92,6 +91,11 @@ function Avatar() {
       c.name = "thankful";
       list.push(c);
     }
+    if (twistDanceAnimations && twistDanceAnimations[0]) {
+      const c = twistDanceAnimations[0].clone();
+      c.name = "twistDanceAnimations";
+      list.push(c);
+    }
     return list;
   }, [
     idleAnimations,
@@ -103,15 +107,17 @@ function Avatar() {
     surprisedAnimations,
     tellingSecretAnimations,
     thankfulAnimations,
+    twistDanceAnimations,
   ]);
 
   const { actions } = useAnimations(listAnimations, groupRef);
 
   const { activeAnimation } = useControllerStore();
 
-  console.log(nodes);
+  //console.log(nodes);
   // console.log(materials);
   // console.log(listAnimations);
+  // console.log(activeAnimation);
 
   useEffect(() => {
     actions[activeAnimation]?.reset().fadeIn(0.5).play();
@@ -120,27 +126,54 @@ function Avatar() {
     };
   }, [activeAnimation, actions]);
 
-  const { playAudio, script } = useControls({
-    playAudio: false,
-    script: {
-      value: "voz",
-      options: ["voz"],
-    },
+  const playAudio = true;
+
+  const audio = useMemo(
+    () => new Audio(`/audios/${activeAnimation}.wav`),
+    [activeAnimation]
+  );
+  const [lipsync, setLipsync] = useState<{ mouthCues: RhubarbCue[] }>({
+    mouthCues: [],
   });
 
-  const audio = useMemo(() => new Audio(`/audios/${script}.wav`), [script]);
-  const jsonFile = useLoader(THREE.FileLoader, `/audios/${script}.wav.json`);
-  const lipsync = JSON.parse(jsonFile as string) as { mouthCues: RhubarbCue[] };
+  useEffect(() => {
+    let cancelled = false;
 
-  console.log(lipsync);
+    const url = `/audios/${activeAnimation}.wav.json`;
+
+    fetch(url)
+      .then((r) => (r.ok ? r.text() : Promise.resolve('{"mouthCues":[]}')))
+      .then((text) => {
+        if (cancelled) return;
+        try {
+          const data = JSON.parse(text) as { mouthCues: RhubarbCue[] };
+          setLipsync(data?.mouthCues ? data : { mouthCues: [] });
+        } catch {
+          setLipsync({ mouthCues: [] });
+        }
+      })
+      .catch(() => setLipsync({ mouthCues: [] }));
+
+    return () => {
+      cancelled = true;
+    };
+  }, [activeAnimation]);
 
   useEffect(() => {
+    if (!audio) return;
+
     if (playAudio) {
-      audio.play();
+      audio.play().catch((e) => {
+        console.warn("Audio playback failed (user interaction required):", e);
+      });
     } else {
       audio.pause();
     }
-  }, [playAudio, script, audio]);
+
+    return () => {
+      audio.pause();
+    };
+  }, [playAudio, activeAnimation, audio]);
 
   const headRef = useRef<SkinnedMesh | null>(null);
   const teethRef = useRef<SkinnedMesh | null>(null);
@@ -151,7 +184,7 @@ function Avatar() {
   }, [nodes]);
 
   useFrame(() => {
-    const currentTime = audio.currentTime;
+    const currentTime = audio?.currentTime || 0;
     const s = 0.22;
 
     const head = headRef.current;
@@ -218,4 +251,4 @@ function Avatar() {
 
 export default Avatar;
 
-useGLTF.preload("/glb/placeholder.glb");
+useGLTF.preload("/glb/Saia_MT.glb");

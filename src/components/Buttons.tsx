@@ -11,6 +11,7 @@ const listAnimations = [
   "surprised",
   "tellingSecret",
   "thankful",
+  "twistDanceAnimations",
 ];
 
 function Buttons() {
