@@ -11,6 +11,8 @@ node_modules
 dist
 dist-ssr
 *.local
+public/audios/mp3/*.mp3
+Rhubarb-Lip-Sync-1.14.0-Windows
 
 # Editor directories and files
 .vscode/*

@@ -1,5 +1,5 @@
 import style from "./styles/SceneLoader.module.css";
-import { Html, useProgress } from "@react-three/drei";
+import { useProgress } from "@react-three/drei";
 import { useEffect, useState } from "react";
 
 function SceneLoader() {
@@ -7,18 +7,18 @@ function SceneLoader() {
   const [shown, setShown] = useState<number>(0);
 
   useEffect(() => {
-    const p = Math.floor(progress);
+    const p = Number(progress.toFixed(0));
+
     if (p > 0 && p !== shown) {
       const id = requestAnimationFrame(() => setShown(p));
       return () => cancelAnimationFrame(id);
     }
   }, [progress, shown]);
 
-  return (
-    <Html center>
-      <div className={style.loader}>{shown}%</div>
-    </Html>
-  );
+  if (shown === 100) {
+    return null;
+  }
+  return <div className={style.loader}>{shown}%</div>;
 }
 
 export default SceneLoader;
