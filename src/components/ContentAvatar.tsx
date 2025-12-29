@@ -14,7 +14,7 @@ function ContentAvatar() {
         enablePan={false}
       />
       <Environment preset="apartment" />
-      <Center position={[0, 0, 1]}>
+      <Center position={[0, 0, 0.4]}>
         <Avatar />
       </Center>
     </>
