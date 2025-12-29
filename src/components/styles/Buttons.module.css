@@ -1,8 +1,12 @@
 .buttons {
   position: absolute;
   z-index: 1;
-  top: 1rem;
+  bottom: 1rem;
   left: 1rem;
+
+  max-width: 220px;
+
   display: flex;
+  flex-wrap: wrap;
   gap: 0.5rem;
 }
